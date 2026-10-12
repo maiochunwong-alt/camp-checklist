@@ -161,7 +161,7 @@ function startSession(tent, seasons){
 }
 
 // ---------- 勾選清單 ----------
-const PER=10;
+const PER=8;
 function checklist(keep){
   const s=S.session; if(!s) return home();
   const items = s.ids.map(id=>S.items.find(x=>x.id===id)).filter(Boolean);
