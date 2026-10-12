@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="露營清單確認">
+<meta name="theme-color" content="#2f6b3a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>露營清單確認</title>
+<style>
+  :root{
+    --bg:#f4f5f2; --card:#fff; --text:#1c1c1c; --sub:#666; --line:#e2e4de;
+    --green:#2f6b3a; --green-l:#e6f0e7; --red:#d12c2c; --btn:#2f6b3a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,"PingFang TC","Heiti TC",sans-serif;font-size:19px;line-height:1.6}
+  header{position:sticky;top:0;z-index:5;background:var(--green);color:#fff;
+    padding:calc(env(safe-area-inset-top) + 10px) 16px 12px;display:flex;align-items:center;gap:8px}
+  header h1{flex:1;margin:0;font-size:21px;font-weight:600}
+  .hbtn{background:none;border:0;color:#fff;font-size:26px;line-height:1;padding:4px 10px;min-width:44px;min-height:44px}
+  main{padding:16px 16px calc(env(safe-area-inset-bottom) + 24px);max-width:640px;margin:0 auto}
+  .card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .label{font-size:16px;color:var(--sub);margin-bottom:4px}
+  .date{font-size:22px;font-weight:600}
+  .red{color:var(--red)} .black{color:var(--text)}
+  .list-text{font-size:19px;line-height:1.9;word-break:break-word}
+  .btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:20px;font-weight:600;
+    background:var(--btn);color:#fff;margin-top:12px;min-height:56px}
+  .btn.sec{background:#fff;color:var(--green);border:2px solid var(--green)}
+  .btn.danger{background:#fff;color:var(--red);border:2px solid var(--red)}
+  .btn:disabled{opacity:.35}
+  .row2{display:flex;gap:12px} .row2 .btn{flex:1}
+  .item{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:12px;
+    padding:14px 16px;margin-bottom:10px;min-height:62px;border:2px solid transparent}
+  .item.on{background:var(--green-l);border-color:var(--green)}
+  .box{flex:0 0 30px;height:30px;border-radius:8px;border:2px solid #9aa39b;display:flex;align-items:center;justify-content:center;
+    font-size:20px;color:#fff;font-weight:700}
+  .item.on .box{background:var(--green);border-color:var(--green)}
+  .iname{font-size:20px}
+  .need{font-size:16px;color:var(--sub)}
+  .cat{font-size:15px;color:var(--green);font-weight:600;margin:14px 4px 6px}
+  .progress{font-size:16px;color:var(--sub);text-align:center;margin:4px 0 10px}
+  .choice{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);
+    border-radius:12px;padding:16px;font-size:20px;margin-bottom:12px;color:var(--text);min-height:58px}
+  .hint{font-size:16px;color:var(--sub);margin:4px 2px 14px}
+  .menu-mask{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.15)}
+  .menu{position:fixed;z-index:21;right:12px;top:calc(env(safe-area-inset-top) + 60px);background:#fff;border-radius:14px;
+    box-shadow:0 8px 30px rgba(0,0,0,.2);overflow:hidden;min-width:220px}
+  .menu button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);
+    padding:16px 20px;font-size:19px;color:var(--text)}
+  .menu button:last-child{border-bottom:0}
+  label.f{display:block;font-size:16px;color:var(--sub);margin:14px 0 6px}
+  select,input[type=text]{width:100%;font-size:19px;padding:13px 12px;border-radius:10px;border:1.5px solid #c9cdc5;background:#fff;color:var(--text);
+    -webkit-appearance:none;appearance:none}
+  .mrow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border-radius:12px;
+    padding:12px 16px;margin-bottom:8px;min-height:56px}
+  .mrow small{display:block;color:var(--sub);font-size:14px}
+  .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 30px);transform:translateX(-50%);
+    background:rgba(0,0,0,.8);color:#fff;padding:10px 20px;border-radius:20px;font-size:17px;z-index:30}
+  .empty{color:var(--sub)}
+</style>
+</head>
+<body>
+<header>
+  <button class="hbtn" id="backBtn" style="visibility:hidden" aria-label="返回">‹</button>
+  <h1 id="title">露營清單確認</h1>
+  <button class="hbtn" id="menuBtn" aria-label="選單">⋯</button>
+</header>
+<main id="app"></main>
+
+<script>
+const DEFAULT_ITEMS = [["輕裝天幕帳", "帳篷與基礎", "輕裝快搭帳", "必要"], ["輕裝天幕帳", "帳篷與基礎", "防水地布", "必要"], ["輕裝天幕帳", "帳篷與基礎", "大天幕", "必要"], ["通用", "帳篷與基礎", "天幕營柱", "必要"], ["通用", "帳篷與基礎", "營釘&營鎚", "必要"], ["通用", "帳篷與基礎", "營繩", "必要"], ["通用", "帳篷與基礎", "豬尾巴", "必要"], ["通用", "睡眠與寢具", "睡袋", "必要"], ["通用", "睡眠與寢具", "枕頭", "必要"], ["通用", "睡眠與寢具", "床墊", "必要"], ["通用", "睡眠與寢具", "床包", "必要"], ["通用", "睡眠與寢具", "內地墊", "必要"], ["通用", "電力與照明", "戶外動力延長線", "必要"], ["通用", "電力與照明", "燈", "必要"], ["通用", "電力與照明", "夜衝路燈", "必要"], ["通用", "電力與照明", "鼓風機", "必要"], ["通用", "電力與照明", "鼓風機長管", "必要"], ["通用", "廚房野炊", "保冰桶 / 冰磚", "非必要"], ["通用", "廚房野炊", "卡式瓦斯爐", "必要"], ["通用", "廚房野炊", "卡式瓦斯罐", "必要"], ["通用", "廚房野炊", "擋風板", "必要"], ["通用", "廚房野炊", "蛋捲桌", "必要"], ["通用", "廚房野炊", "多功能套鍋組", "必要"], ["通用", "廚房野炊", "廚具收納袋", "必要"], ["通用", "廚房野炊", "個人碗盤餐具", "必要"], ["通用", "廚房野炊", "吊掛瀝水網", "必要"], ["通用", "廚房野炊", "洗碗精", "必要"], ["通用", "廚房野炊", "垃圾袋", "必要"], ["通用", "睡眠與寢具", "行軍床", "必要"], ["通用", "衛生與個人", "大浴巾", "必要"], ["通用", "衛生與個人", "換洗衣物", "必要"], ["通用", "衛生與個人", "洗漱用品", "必要"], ["通用", "廚房野炊", "垃圾架", "必要"], ["通用", "衛生與個人", "濕紙巾 / 衛生紙", "必要"], ["通用", "醫療與防護", "個人常備藥", "必要"], ["通用", "醫療與防護", "強效防蚊液", "必要"], ["通用", "醫療與防護", "防曬乳", "必要"], ["通用", "醫療與防護", "急救小包", "必要"], ["通用", "醫療與防護", "止癢藥膏", "必要"], ["通用", "電力與照明", "排流扇", "必要"], ["通用", "醫療與防護", "防蚊網帳", "必要"], ["通用", "醫療與防護", "蚊香", "必要"], ["通用", "帳篷與基礎", "桌子", "必要"], ["通用", "帳篷與基礎", "椅子", "必要"], ["通用", "帳篷與基礎", "雜物箱", "必要"], ["通用", "帳篷與基礎", "RV 桶", "必要"], ["冬季/寒流加帶", "季節客製化", "煤油暖爐", "非必要"], ["冬季/寒流加帶", "季節客製化", "一氧化碳警報器", "非必要"], ["冬季/寒流加帶", "季節客製化", "雙人電熱毯", "非必要"], ["夏季加帶", "季節客製化", "製冰機", "非必要"], ["CC3 專用", "帳篷與基礎", "CC3 達人外帳本體", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用延伸天幕", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用營柱袋", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 客廳內地墊", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 內帳專用防潮墊", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用外防潮地布", "必要"], ["63充氣帳專用", "帳篷與基礎", "外帳本體", "必要"], ["63充氣帳專用", "帳篷與基礎", "延伸天幕", "必要"], ["63充氣帳專用", "帳篷與基礎", "內帳專用防潮墊", "必要"], ["63充氣帳專用", "帳篷與基礎", "外防潮地布", "必要"], ["63充氣帳專用", "帳篷與基礎", "高功率打氣機", "必要"]];
+const SEASON_WINTER = '冬季/寒流加帶';
+const SEASON_SUMMER = '夏季加帶';
+const COMMON = '通用';
+const LS = 'campChecklist.v1';
+
+// ---------- 資料 ----------
+function defaultState(){
+  const items = DEFAULT_ITEMS.map((r,i)=>({id:'d'+i, mode:r[0], cat:r[1], name:r[2], need:r[3]||'必要'}));
+  const modes=[], cats=[];
+  items.forEach(it=>{ if(!modes.includes(it.mode)) modes.push(it.mode); if(!cats.includes(it.cat)) cats.push(it.cat); });
+  return {items, modes, cats, record:null, session:null, seq:1};
+}
+let S;
+try{ S = JSON.parse(localStorage.getItem(LS)) || defaultState(); }catch(e){ S = defaultState(); }
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }
+
+const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $app = document.getElementById('app');
+const isSeason = m => m===SEASON_WINTER || m===SEASON_SUMMER;
+const tentModes = () => S.modes.filter(m => m!==COMMON && !isSeason(m));
+
+function today(){ const d=new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`; }
+// 3~10 月夏季、11~3 月冬季，3 月兩者都算
+function seasonsFor(date){
+  const m = date.getMonth()+1, s=[];
+  if(m>=3 && m<=10) s.push(SEASON_SUMMER);
+  if(m>=11 || m<=3) s.push(SEASON_WINTER);
+  return s;
+}
+const seasonLabel = arr => arr.map(s=>s===SEASON_SUMMER?'夏季':'冬季').join('＋');
+function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),1600); }
+
+function setHeader(title, back, keep){
+  document.getElementById('title').textContent = title;
+  const b=document.getElementById('backBtn');
+  b.style.visibility = back ? 'visible':'hidden';
+  b.onclick = back || null;
+  if(!keep) window.scrollTo(0,0);
+}
+
+// ---------- 首頁 ----------
+function home(){
+  setHeader('露營清單確認');
+  const r=S.record, sess=S.session;
+  let h='';
+  if(r){
+    h+=`<div class="card"><div class="label">勾選日期</div><div class="date">${esc(r.date)}</div>
+        <div class="need" style="margin-top:4px">${esc(r.tent)}${r.season?'・'+esc(r.season):''}</div></div>
+      <div class="card"><div class="label">未勾選（${r.unchecked.length} 項）</div>
+        <div class="list-text red">${r.unchecked.length?r.unchecked.map(esc).join('，'):'<span class="empty">無</span>'}</div></div>
+      <div class="card"><div class="label">已勾選（${r.checked.length} 項）</div>
+        <div class="list-text black">${r.checked.length?r.checked.map(esc).join('，'):'<span class="empty">無</span>'}</div></div>`;
+  }else{
+    h+=`<div class="card"><div class="label">勾選日期</div><div class="date empty">尚無紀錄</div></div>`;
+  }
+  if(sess) h+=`<button class="btn sec" id="resume">繼續上次未完成的確認</button>`;
+  h+=`<button class="btn" id="start">${r||sess?'重新開始':'開始'}</button>`;
+  $app.innerHTML=h;
+  document.getElementById('start').onclick=chooseTent;
+  if(sess) document.getElementById('resume').onclick=()=>checklist();
+}
+
+// ---------- 選帳篷模式 ----------
+function chooseTent(){
+  setHeader('選擇帳篷模式', home);
+  const ss = seasonsFor(new Date());
+  let h=`<div class="hint">今天是 ${today()}，季節加帶：${seasonLabel(ss)}<br>「通用」物品一定會列出。</div>`;
+  tentModes().forEach((m,i)=>{ h+=`<button class="choice" data-i="${i}">${esc(m)}</button>`; });
+  $app.innerHTML=h;
+  $app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>startSession(tentModes()[+b.dataset.i], ss));
+}
+
+function sortItems(list){
+  return list.slice().sort((a,b)=>{
+    const ca=S.cats.indexOf(a.cat), cb=S.cats.indexOf(b.cat);
+    if(ca!==cb) return ca-cb;
+    return S.items.indexOf(a)-S.items.indexOf(b);
+  });
+}
+function startSession(tent, seasons){
+  const pick = S.items.filter(it => it.mode===COMMON || it.mode===tent || seasons.includes(it.mode));
+  S.session={date:today(), tent, season:seasonLabel(seasons), ids:sortItems(pick).map(it=>it.id), checked:{}, page:0};
+  save(); checklist();
+}
+
+// ---------- 勾選清單 ----------
+const PER=10;
+function checklist(keep){
+  const s=S.session; if(!s) return home();
+  const items = s.ids.map(id=>S.items.find(x=>x.id===id)).filter(Boolean);
+  const pages = Math.max(1, Math.ceil(items.length/PER));
+  if(s.page>=pages) s.page=pages-1;
+  setHeader(`${s.tent}`, home, keep);
+  const slice = items.slice(s.page*PER, s.page*PER+PER);
+  const done = items.filter(it=>s.checked[it.id]).length;
+  let h=`<div class="progress">第 ${s.page+1} / ${pages} 頁・已勾選 ${done} / ${items.length}</div>`;
+  let lastCat=null;
+  slice.forEach(it=>{
+    if(it.cat!==lastCat){ h+=`<div class="cat">${esc(it.cat)}</div>`; lastCat=it.cat; }
+    const on=!!s.checked[it.id];
+    h+=`<div class="item${on?' on':''}" data-id="${esc(it.id)}"><div class="box">${on?'✓':''}</div>
+        <div><span class="iname">${esc(it.name)}</span> <span class="need">（${esc(it.need)}）</span></div></div>`;
+  });
+  const last = s.page===pages-1;
+  h+=`<div class="row2"><button class="btn sec" id="prev" ${s.page===0?'disabled':''}>上一頁</button>
+      <button class="btn" id="next">${last?'完成':'下一頁'}</button></div>`;
+  $app.innerHTML=h;
+  $app.querySelectorAll('.item').forEach(el=>el.onclick=()=>{
+    const id=el.dataset.id; s.checked[id]=!s.checked[id]; if(!s.checked[id]) delete s.checked[id];
+    save(); checklist(true);
+  });
+  document.getElementById('prev').onclick=()=>{ s.page--; save(); checklist(); };
+  document.getElementById('next').onclick=()=>{ if(last) finish(items); else { s.page++; save(); checklist(); } };
+}
+
+function finish(items){
+  const s=S.session;
+  const checked=items.filter(it=>s.checked[it.id]).map(it=>it.name);
+  const unchecked=items.filter(it=>!s.checked[it.id]).map(it=>it.name);
+  S.record={date:s.date, tent:s.tent, season:s.season, checked, unchecked};
+  S.session=null; save();
+  setHeader('確認結果', home);
+  $app.innerHTML=`<div class="card"><div class="label">未勾選（${unchecked.length} 項）</div>
+    <div class="list-text red">${unchecked.length?unchecked.map(esc).join('，'):'全部都帶齊了 👍'}</div></div>
+    <button class="btn" id="h">回首頁</button>`;
+  document.getElementById('h').onclick=home;
+}
+
+// ---------- 右上選單 ----------
+document.getElementById('menuBtn').onclick=()=>{
+  const mask=document.createElement('div'); mask.className='menu-mask';
+  const m=document.createElement('div'); m.className='menu';
+  m.innerHTML=`<button data-a="item">新增物品</button><button data-a="mode">新增帳篷模式</button>
+    <button data-a="cat">新增裝備類別</button><button data-a="manage">管理清單（修改／刪除）</button>`;
+  const close=()=>{mask.remove();m.remove();};
+  mask.onclick=close;
+  m.onclick=e=>{ const a=e.target.dataset.a; if(!a) return; close();
+    ({item:()=>itemForm(null), mode:()=>nameForm('mode'), cat:()=>nameForm('cat'), manage})[a](); };
+  document.body.append(mask,m);
+};
+
+function opts(arr, sel){ return arr.map(v=>`<option${v===sel?' selected':''}>${esc(v)}</option>`).join(''); }
+
+function itemForm(id){
+  const it = id ? S.items.find(x=>x.id===id) : null;
+  setHeader(it?'修改物品':'新增物品', it?manage:home);
+  $app.innerHTML=`<div class="card">
+    <label class="f">帳篷限制模式</label><select id="fm">${opts(S.modes, it?it.mode:COMMON)}</select>
+    <label class="f">裝備類別</label><select id="fc">${opts(S.cats, it?it.cat:S.cats[0])}</select>
+    <label class="f">裝備名稱</label><input type="text" id="fn" value="${it?esc(it.name):''}" placeholder="例如：頭燈">
+    <label class="f">必要性</label><select id="fq">${opts(['必要','非必要'], it?it.need:'必要')}</select>
+    <button class="btn" id="ok">儲存</button>
+    ${it?'<button class="btn danger" id="del">刪除這個物品</button>':''}</div>`;
+  document.getElementById('ok').onclick=()=>{
+    const name=document.getElementById('fn').value.trim();
+    if(!name){ toast('請輸入裝備名稱'); return; }
+    const g=x=>document.getElementById(x).value;
+    const data={mode:g('fm'), cat:g('fc'), name, need:g('fq')};
+    if(it){ Object.assign(it,data); save(); toast('已修改'); manage(); }
+    else { S.items.push({id:'u'+(S.seq++), ...data}); save(); toast('已新增'); itemForm(null); }
+  };
+  if(it) document.getElementById('del').onclick=()=>{
+    if(!confirm(`確定要刪除「${it.name}」？`)) return;
+    S.items=S.items.filter(x=>x!==it); save(); toast('已刪除'); manage();
+  };
+}
+
+function nameForm(kind){
+  const isMode=kind==='mode', arr=isMode?S.modes:S.cats, label=isMode?'帳篷模式':'裝備類別';
+  setHeader('新增'+label, home);
+  $app.innerHTML=`<div class="card"><label class="f">新的${label}名稱</label>
+    <input type="text" id="nn" placeholder="${isMode?'例如：家庭帳':'例如：兒童用品'}">
+    <button class="btn" id="ok">儲存</button></div>
+    <div class="label" style="margin:8px 4px">目前已有的${label}</div>
+    <div class="card list-text">${arr.map(esc).join('，')}</div>`;
+  document.getElementById('ok').onclick=()=>{
+    const v=document.getElementById('nn').value.trim();
+    if(!v){ toast('請輸入名稱'); return; }
+    if(arr.includes(v)){ toast('已經有這個'+label); return; }
+    arr.push(v); save(); toast('已新增'); nameForm(kind);
+  };
+}
+
+function manage(){
+  setHeader('管理清單', home);
+  let h=`<div class="hint">點物品可修改或刪除。</div>`;
+  S.cats.forEach(c=>{
+    const list=S.items.filter(it=>it.cat===c); if(!list.length) return;
+    h+=`<div class="cat">${esc(c)}</div>`;
+    list.forEach(it=>{ h+=`<div class="mrow" data-id="${esc(it.id)}"><div>${esc(it.name)}（${esc(it.need)}）<small>${esc(it.mode)}</small></div><span class="need">›</span></div>`; });
+  });
+  h+=`<button class="btn danger" id="reset" style="margin-top:24px">還原成原始 Excel 清單</button>`;
+  $app.innerHTML=h;
+  $app.querySelectorAll('.mrow').forEach(el=>el.onclick=()=>itemForm(el.dataset.id));
+  document.getElementById('reset').onclick=()=>{
+    if(!confirm('會清除所有自行新增、修改的物品與模式、類別（勾選紀錄保留），確定？')) return;
+    const keep={record:S.record}; S=defaultState(); S.record=keep.record; save(); toast('已還原'); manage();
+  };
+}
+
+home();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
