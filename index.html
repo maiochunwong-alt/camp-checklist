@@ -73,30 +73,82 @@
 </header>
 <main id="app"></main>
 
+<script src="xlsx.mini.min.js"></script>
 <script>
-const DEFAULT_ITEMS = [["輕裝天幕帳", "帳篷與基礎", "輕裝快搭帳", "必要"], ["輕裝天幕帳", "帳篷與基礎", "防水地布", "必要"], ["輕裝天幕帳", "帳篷與基礎", "大天幕", "必要"], ["通用", "帳篷與基礎", "天幕營柱", "必要"], ["通用", "帳篷與基礎", "營釘&營鎚", "必要"], ["通用", "帳篷與基礎", "營繩", "必要"], ["通用", "帳篷與基礎", "豬尾巴", "必要"], ["通用", "睡眠與寢具", "睡袋", "必要"], ["通用", "睡眠與寢具", "枕頭", "必要"], ["通用", "睡眠與寢具", "床墊", "必要"], ["通用", "睡眠與寢具", "床包", "必要"], ["通用", "睡眠與寢具", "內地墊", "必要"], ["通用", "電力與照明", "戶外動力延長線", "必要"], ["通用", "電力與照明", "燈", "必要"], ["通用", "電力與照明", "夜衝路燈", "必要"], ["通用", "電力與照明", "鼓風機", "必要"], ["通用", "電力與照明", "鼓風機長管", "必要"], ["通用", "廚房野炊", "保冰桶 / 冰磚", "非必要"], ["通用", "廚房野炊", "卡式瓦斯爐", "必要"], ["通用", "廚房野炊", "卡式瓦斯罐", "必要"], ["通用", "廚房野炊", "擋風板", "必要"], ["通用", "廚房野炊", "蛋捲桌", "必要"], ["通用", "廚房野炊", "多功能套鍋組", "必要"], ["通用", "廚房野炊", "廚具收納袋", "必要"], ["通用", "廚房野炊", "個人碗盤餐具", "必要"], ["通用", "廚房野炊", "吊掛瀝水網", "必要"], ["通用", "廚房野炊", "洗碗精", "必要"], ["通用", "廚房野炊", "垃圾袋", "必要"], ["通用", "睡眠與寢具", "行軍床", "必要"], ["通用", "衛生與個人", "大浴巾", "必要"], ["通用", "衛生與個人", "換洗衣物", "必要"], ["通用", "衛生與個人", "洗漱用品", "必要"], ["通用", "廚房野炊", "垃圾架", "必要"], ["通用", "衛生與個人", "濕紙巾 / 衛生紙", "必要"], ["通用", "醫療與防護", "個人常備藥", "必要"], ["通用", "醫療與防護", "強效防蚊液", "必要"], ["通用", "醫療與防護", "防曬乳", "必要"], ["通用", "醫療與防護", "急救小包", "必要"], ["通用", "醫療與防護", "止癢藥膏", "必要"], ["通用", "電力與照明", "排流扇", "必要"], ["通用", "醫療與防護", "防蚊網帳", "必要"], ["通用", "醫療與防護", "蚊香", "必要"], ["通用", "帳篷與基礎", "桌子", "必要"], ["通用", "帳篷與基礎", "椅子", "必要"], ["通用", "帳篷與基礎", "雜物箱", "必要"], ["通用", "帳篷與基礎", "RV 桶", "必要"], ["冬季/寒流加帶", "季節客製化", "煤油暖爐", "非必要"], ["冬季/寒流加帶", "季節客製化", "一氧化碳警報器", "非必要"], ["冬季/寒流加帶", "季節客製化", "雙人電熱毯", "非必要"], ["夏季加帶", "季節客製化", "製冰機", "非必要"], ["CC3 專用", "帳篷與基礎", "CC3 達人外帳本體", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用延伸天幕", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用營柱袋", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 客廳內地墊", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 內帳專用防潮墊", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用外防潮地布", "必要"], ["63充氣帳專用", "帳篷與基礎", "外帳本體", "必要"], ["63充氣帳專用", "帳篷與基礎", "延伸天幕", "必要"], ["63充氣帳專用", "帳篷與基礎", "內帳專用防潮墊", "必要"], ["63充氣帳專用", "帳篷與基礎", "外防潮地布", "必要"], ["63充氣帳專用", "帳篷與基礎", "高功率打氣機", "必要"]];
+const DEFAULT_ITEMS = [["輕裝天幕帳", "帳篷與基礎", "輕裝快搭帳", "必要"], ["輕裝天幕帳", "帳篷與基礎", "防水地布", "必要"], ["輕裝天幕帳", "帳篷與基礎", "大天幕", "必要"], ["通用", "帳篷與基礎", "天幕營柱", "必要"], ["通用", "帳篷與基礎", "營釘&營鎚", "必要"], ["通用", "帳篷與基礎", "營繩", "必要"], ["通用", "帳篷與基礎", "豬尾巴", "必要"], ["通用", "睡眠與寢具", "睡袋", "必要"], ["通用", "睡眠與寢具", "枕頭", "必要"], ["通用", "睡眠與寢具", "床墊", "必要"], ["通用", "睡眠與寢具", "床包", "必要"], ["通用", "睡眠與寢具", "內地墊", "必要"], ["通用", "電力與照明", "戶外動力延長線", "必要"], ["通用", "電力與照明", "燈", "必要"], ["通用", "電力與照明", "夜衝路燈", "必要"], ["通用", "電力與照明", "鼓風機", "必要"], ["通用", "電力與照明", "鼓風機長管", "必要"], ["通用", "廚房野炊", "保冰桶 / 冰磚", "非必要"], ["通用", "廚房野炊", "卡式瓦斯爐", "必要"], ["通用", "廚房野炊", "卡式瓦斯罐", "必要"], ["通用", "廚房野炊", "擋風板", "必要"], ["通用", "廚房野炊", "蛋捲桌", "必要"], ["通用", "廚房野炊", "多功能套鍋組", "必要"], ["通用", "廚房野炊", "廚具收納袋", "必要"], ["通用", "廚房野炊", "個人碗盤餐具", "必要"], ["通用", "廚房野炊", "吊掛瀝水網", "必要"], ["通用", "廚房野炊", "洗碗精", "必要"], ["通用", "廚房野炊", "垃圾袋", "必要"], ["通用", "睡眠與寢具", "行軍床", "必要"], ["通用", "衛生與個人", "大浴巾", "必要"], ["通用", "衛生與個人", "換洗衣物", "必要"], ["通用", "衛生與個人", "洗漱用品", "必要"], ["通用", "廚房野炊", "垃圾架", "必要"], ["通用", "衛生與個人", "濕紙巾 / 衛生紙", "必要"], ["通用", "醫療與防護", "個人常備藥", "必要"], ["通用", "醫療與防護", "強效防蚊液", "必要"], ["通用", "醫療與防護", "防曬乳", "必要"], ["通用", "醫療與防護", "急救小包", "必要"], ["通用", "醫療與防護", "止癢藥膏", "必要"], ["通用", "電力與照明", "排流扇", "必要"], ["通用", "醫療與防護", "防蚊網帳", "必要"], ["通用", "醫療與防護", "蚊香", "必要"], ["通用", "帳篷與基礎", "桌子", "必要"], ["通用", "帳篷與基礎", "椅子", "必要"], ["通用", "帳篷與基礎", "雜物箱", "必要"], ["通用", "帳篷與基礎", "RV 桶", "必要"], ["冬季/寒流加帶", "季節客製化", "煤油暖爐", "非必要"], ["冬季/寒流加帶", "季節客製化", "一氧化碳警報器", "非必要"], ["冬季/寒流加帶", "季節客製化", "雙人電熱毯", "非必要"], ["夏季加帶", "季節客製化", "製冰機", "非必要"], ["CC3 專用", "帳篷與基礎", "CC3 達人外帳本體", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用延伸天幕", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用營柱袋", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 客廳內地墊", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 內帳專用防潮墊", "必要"], ["CC3 專用", "帳篷與基礎", "CC3 專用外防潮地布", "必要"], ["63充氣帳專用", "帳篷與基礎", "外帳本體", "必要"], ["63充氣帳專用", "帳篷與基礎", "延伸天幕", "必要"], ["63充氣帳專用", "帳篷與基礎", "內帳專用防潮墊", "必要"], ["63充氣帳專用", "帳篷與基礎", "外防潮地布", "必要"], ["63充氣帳專用", "帳篷與基礎", "高功率打氣機", "必要"]];          // 沒網路又是第一次開時的備用清單
+const SERVER_XLSX = 'camp-items.xlsx';  // GitHub 上的共用清單（上傳同名檔案即可更新）
 const SEASON_WINTER = '冬季/寒流加帶';
 const SEASON_SUMMER = '夏季加帶';
 const COMMON = '通用';
-const LS = 'campChecklist.v1';
+const LS = 'campChecklist.v2';
+const LS_OLD = 'campChecklist.v1';
 
 // ---------- 資料 ----------
-function defaultState(){
-  const items = DEFAULT_ITEMS.map((r,i)=>({id:'d'+i, mode:r[0], cat:r[1], name:r[2], need:r[3]||'必要'}));
-  const modes=[], cats=[];
-  items.forEach(it=>{ if(!modes.includes(it.mode)) modes.push(it.mode); if(!cats.includes(it.cat)) cats.push(it.cat); });
-  return {items, modes, cats, record:null, session:null, seq:1};
+// server：最後一次抓到的共用清單 [{key,mode,cat,name,need}]
+// 手機自己的：added（自己新增）、edits（改過的共用物品，以 key 對應）、deleted（刪掉的共用物品 key）
+function blank(){
+  return {server:null, serverAt:null, added:[], edits:{}, deleted:[], modes:[], cats:[], record:null, session:null, seq:1};
 }
+const keyOf = (mode,name) => 's:'+mode+'|'+name;
+const fromRows = rows => rows.filter(r=>r && r[2]).map(r=>({key:keyOf(r[0],r[2]), mode:String(r[0]).trim(), cat:String(r[1]).trim(), name:String(r[2]).trim(), need:(r[3]?String(r[3]).trim():'必要')}));
+
 let S;
-try{ S = JSON.parse(localStorage.getItem(LS)) || defaultState(); }catch(e){ S = defaultState(); }
+try{ S = JSON.parse(localStorage.getItem(LS)); }catch(e){ S=null; }
+if(!S){
+  S = blank();
+  // 從舊版搬過來：勾選紀錄、自己新增的物品
+  try{
+    const o = JSON.parse(localStorage.getItem(LS_OLD));
+    if(o){
+      S.record = o.record || null;
+      (o.items||[]).filter(it=>String(it.id).startsWith('u')).forEach(it=>S.added.push({key:'u'+(S.seq++), mode:it.mode, cat:it.cat, name:it.name, need:it.need}));
+    }
+  }catch(e){}
+}
 function save(){ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }
+
+function baseItems(){ return S.server || fromRows(DEFAULT_ITEMS); }
+// 合併後的清單：共用清單（扣掉刪除、套用修改）＋ 自己新增
+function allItems(){
+  const out=[];
+  baseItems().forEach(it=>{
+    if(S.deleted.includes(it.key)) return;
+    out.push(S.edits[it.key] ? {...it, ...S.edits[it.key], key:it.key, shared:true} : {...it, shared:true});
+  });
+  S.added.forEach(it=>out.push({...it, shared:false}));
+  return out;
+}
+function uniq(arr){ return arr.filter((v,i)=>v && arr.indexOf(v)===i); }
+const allModes = () => uniq([...baseItems().map(i=>i.mode), ...allItems().map(i=>i.mode), ...S.modes]);
+const allCats  = () => uniq([...baseItems().map(i=>i.cat),  ...allItems().map(i=>i.cat),  ...S.cats]);
+
+// 抓 GitHub 上的 Excel
+async function loadServer(){
+  try{
+    const res = await fetch(encodeURI(SERVER_XLSX)+'?t='+Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error(res.status);
+    const wb = XLSX.read(new Uint8Array(await res.arrayBuffer()), {type:'array'});
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:''});
+    const head = (rows[0]||[]).map(h=>String(h).trim());
+    const col = (name, def) => { const i=head.indexOf(name); return i>=0?i:def; };
+    const ci=[col('帳篷限制模式',0), col('裝備類別',1), col('裝備名稱',2), col('必要性',3)];
+    const items = fromRows(rows.slice(1).map(r=>ci.map(i=>r[i])));
+    if(!items.length) throw new Error('empty');
+    const changed = JSON.stringify(items)!==JSON.stringify(S.server);
+    S.server = items; S.serverAt = nowText(); save();
+    if(changed && currentView==='home') home();
+  }catch(e){ /* 沒網路就用上次的清單 */ }
+}
 
 const esc = s => String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $app = document.getElementById('app');
 const isSeason = m => m===SEASON_WINTER || m===SEASON_SUMMER;
-const tentModes = () => S.modes.filter(m => m!==COMMON && !isSeason(m));
+const tentModes = () => allModes().filter(m => m!==COMMON && !isSeason(m));
+let currentView='home';
 
-function today(){ const d=new Date(); return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`; }
+const pad = n => String(n).padStart(2,'0');
+function today(){ const d=new Date(); return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())}`; }
+function nowText(){ const d=new Date(); return `${today()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 // 3~10 月夏季、11~3 月冬季，3 月兩者都算
 function seasonsFor(date){
   const m = date.getMonth()+1, s=[];
@@ -117,6 +169,7 @@ function setHeader(title, back, keep){
 
 // ---------- 首頁 ----------
 function home(){
+  currentView='home';
   setHeader('露營清單確認');
   const r=S.record, sess=S.session;
   let h='';
@@ -132,6 +185,7 @@ function home(){
   }
   if(sess) h+=`<button class="btn sec" id="resume">繼續上次未完成的確認</button>`;
   h+=`<button class="btn" id="start">${r||sess?'重新開始':'開始'}</button>`;
+  h+=`<div class="hint" style="text-align:center;margin-top:18px">共用清單更新：${S.serverAt?esc(S.serverAt):'尚未連線（使用內建清單）'}</div>`;
   $app.innerHTML=h;
   document.getElementById('start').onclick=chooseTent;
   if(sess) document.getElementById('resume').onclick=()=>checklist();
@@ -139,43 +193,47 @@ function home(){
 
 // ---------- 選帳篷模式 ----------
 function chooseTent(){
+  currentView='tent';
   setHeader('選擇帳篷模式', home);
-  const ss = seasonsFor(new Date());
+  const ss = seasonsFor(new Date()), tm = tentModes();
   let h=`<div class="hint">今天是 ${today()}，季節加帶：${seasonLabel(ss)}<br>「通用」物品一定會列出。</div>`;
-  tentModes().forEach((m,i)=>{ h+=`<button class="choice" data-i="${i}">${esc(m)}</button>`; });
+  tm.forEach((m,i)=>{ h+=`<button class="choice" data-i="${i}">${esc(m)}</button>`; });
   $app.innerHTML=h;
-  $app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>startSession(tentModes()[+b.dataset.i], ss));
+  $app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>startSession(tm[+b.dataset.i], ss));
 }
 
 function sortItems(list){
+  const cats=allCats(), all=allItems().map(i=>i.key);
   return list.slice().sort((a,b)=>{
-    const ca=S.cats.indexOf(a.cat), cb=S.cats.indexOf(b.cat);
+    const ca=cats.indexOf(a.cat), cb=cats.indexOf(b.cat);
     if(ca!==cb) return ca-cb;
-    return S.items.indexOf(a)-S.items.indexOf(b);
+    return all.indexOf(a.key)-all.indexOf(b.key);
   });
 }
 function startSession(tent, seasons){
-  const pick = S.items.filter(it => it.mode===COMMON || it.mode===tent || seasons.includes(it.mode));
-  S.session={date:today(), tent, season:seasonLabel(seasons), ids:sortItems(pick).map(it=>it.id), checked:{}, page:0};
+  const pick = allItems().filter(it => it.mode===COMMON || it.mode===tent || seasons.includes(it.mode));
+  S.session={date:today(), tent, season:seasonLabel(seasons), ids:sortItems(pick).map(it=>it.key), checked:{}, page:0};
   save(); checklist();
 }
 
 // ---------- 勾選清單 ----------
 const PER=8;
 function checklist(keep){
+  currentView='list';
   const s=S.session; if(!s) return home();
-  const items = s.ids.map(id=>S.items.find(x=>x.id===id)).filter(Boolean);
+  const map={}; allItems().forEach(it=>map[it.key]=it);
+  const items = s.ids.map(id=>map[id]).filter(Boolean);
   const pages = Math.max(1, Math.ceil(items.length/PER));
   if(s.page>=pages) s.page=pages-1;
   setHeader(`${s.tent}`, home, keep);
   const slice = items.slice(s.page*PER, s.page*PER+PER);
-  const done = items.filter(it=>s.checked[it.id]).length;
+  const done = items.filter(it=>s.checked[it.key]).length;
   let h=`<div class="progress">第 ${s.page+1} / ${pages} 頁・已勾選 ${done} / ${items.length}</div>`;
   let lastCat=null;
   slice.forEach(it=>{
     if(it.cat!==lastCat){ h+=`<div class="cat">${esc(it.cat)}</div>`; lastCat=it.cat; }
-    const on=!!s.checked[it.id];
-    h+=`<div class="item${on?' on':''}" data-id="${esc(it.id)}"><div class="box">${on?'✓':''}</div>
+    const on=!!s.checked[it.key];
+    h+=`<div class="item${on?' on':''}" data-id="${esc(it.key)}"><div class="box">${on?'✓':''}</div>
         <div><span class="iname">${esc(it.name)}</span> <span class="need">（${esc(it.need)}）</span></div></div>`;
   });
   const last = s.page===pages-1;
@@ -183,7 +241,7 @@ function checklist(keep){
       <button class="btn" id="next">${last?'完成':'下一頁'}</button></div>`;
   $app.innerHTML=h;
   $app.querySelectorAll('.item').forEach(el=>el.onclick=()=>{
-    const id=el.dataset.id; s.checked[id]=!s.checked[id]; if(!s.checked[id]) delete s.checked[id];
+    const id=el.dataset.id; if(s.checked[id]) delete s.checked[id]; else s.checked[id]=true;
     save(); checklist(true);
   });
   document.getElementById('prev').onclick=()=>{ s.page--; save(); checklist(); };
@@ -191,9 +249,10 @@ function checklist(keep){
 }
 
 function finish(items){
+  currentView='result';
   const s=S.session;
-  const checked=items.filter(it=>s.checked[it.id]).map(it=>it.name);
-  const unchecked=items.filter(it=>!s.checked[it.id]).map(it=>it.name);
+  const checked=items.filter(it=>s.checked[it.key]).map(it=>it.name);
+  const unchecked=items.filter(it=>!s.checked[it.key]).map(it=>it.name);
   S.record={date:s.date, tent:s.tent, season:s.season, checked, unchecked};
   S.session=null; save();
   setHeader('確認結果', home);
@@ -218,32 +277,41 @@ document.getElementById('menuBtn').onclick=()=>{
 
 function opts(arr, sel){ return arr.map(v=>`<option${v===sel?' selected':''}>${esc(v)}</option>`).join(''); }
 
-function itemForm(id){
-  const it = id ? S.items.find(x=>x.id===id) : null;
+function itemForm(key){
+  currentView='form';
+  const it = key ? allItems().find(x=>x.key===key) : null;
   setHeader(it?'修改物品':'新增物品', it?manage:home);
   $app.innerHTML=`<div class="card">
-    <label class="f">帳篷限制模式</label><select id="fm">${opts(S.modes, it?it.mode:COMMON)}</select>
-    <label class="f">裝備類別</label><select id="fc">${opts(S.cats, it?it.cat:S.cats[0])}</select>
+    <label class="f">帳篷限制模式</label><select id="fm">${opts(allModes(), it?it.mode:COMMON)}</select>
+    <label class="f">裝備類別</label><select id="fc">${opts(allCats(), it?it.cat:allCats()[0])}</select>
     <label class="f">裝備名稱</label><input type="text" id="fn" value="${it?esc(it.name):''}" placeholder="例如：頭燈">
     <label class="f">必要性</label><select id="fq">${opts(['必要','非必要'], it?it.need:'必要')}</select>
     <button class="btn" id="ok">儲存</button>
-    ${it?'<button class="btn danger" id="del">刪除這個物品</button>':''}</div>`;
+    ${it?'<button class="btn danger" id="del">刪除這個物品</button>':''}
+    ${it&&it.shared?'<div class="hint" style="margin-top:12px">這是共用清單的物品，修改或刪除只影響這支手機。</div>':''}</div>`;
   document.getElementById('ok').onclick=()=>{
     const name=document.getElementById('fn').value.trim();
     if(!name){ toast('請輸入裝備名稱'); return; }
     const g=x=>document.getElementById(x).value;
     const data={mode:g('fm'), cat:g('fc'), name, need:g('fq')};
-    if(it){ Object.assign(it,data); save(); toast('已修改'); manage(); }
-    else { S.items.push({id:'u'+(S.seq++), ...data}); save(); toast('已新增'); itemForm(null); }
+    if(it){
+      if(it.shared) S.edits[it.key]=data;
+      else Object.assign(S.added.find(x=>x.key===it.key), data);
+      save(); toast('已修改'); manage();
+    } else { S.added.push({key:'u'+(S.seq++), ...data}); save(); toast('已新增'); itemForm(null); }
   };
   if(it) document.getElementById('del').onclick=()=>{
     if(!confirm(`確定要刪除「${it.name}」？`)) return;
-    S.items=S.items.filter(x=>x!==it); save(); toast('已刪除'); manage();
+    if(it.shared){ if(!S.deleted.includes(it.key)) S.deleted.push(it.key); delete S.edits[it.key]; }
+    else S.added=S.added.filter(x=>x.key!==it.key);
+    save(); toast('已刪除'); manage();
   };
 }
 
 function nameForm(kind){
-  const isMode=kind==='mode', arr=isMode?S.modes:S.cats, label=isMode?'帳篷模式':'裝備類別';
+  currentView='form';
+  const isMode=kind==='mode', label=isMode?'帳篷模式':'裝備類別';
+  const arr=isMode?allModes():allCats();
   setHeader('新增'+label, home);
   $app.innerHTML=`<div class="card"><label class="f">新的${label}名稱</label>
     <input type="text" id="nn" placeholder="${isMode?'例如：家庭帳':'例如：兒童用品'}">
@@ -254,28 +322,32 @@ function nameForm(kind){
     const v=document.getElementById('nn').value.trim();
     if(!v){ toast('請輸入名稱'); return; }
     if(arr.includes(v)){ toast('已經有這個'+label); return; }
-    arr.push(v); save(); toast('已新增'); nameForm(kind);
+    (isMode?S.modes:S.cats).push(v); save(); toast('已新增'); nameForm(kind);
   };
 }
 
 function manage(){
+  currentView='manage';
   setHeader('管理清單', home);
-  let h=`<div class="hint">點物品可修改或刪除。</div>`;
-  S.cats.forEach(c=>{
-    const list=S.items.filter(it=>it.cat===c); if(!list.length) return;
+  const items=allItems();
+  let h=`<div class="hint">點物品可修改或刪除（只影響這支手機）。</div>`;
+  allCats().forEach(c=>{
+    const list=items.filter(it=>it.cat===c); if(!list.length) return;
     h+=`<div class="cat">${esc(c)}</div>`;
-    list.forEach(it=>{ h+=`<div class="mrow" data-id="${esc(it.id)}"><div>${esc(it.name)}（${esc(it.need)}）<small>${esc(it.mode)}</small></div><span class="need">›</span></div>`; });
+    list.forEach(it=>{ h+=`<div class="mrow" data-id="${esc(it.key)}"><div>${esc(it.name)}（${esc(it.need)}）<small>${esc(it.mode)}${it.shared?'':'・自己新增'}</small></div><span class="need">›</span></div>`; });
   });
-  h+=`<button class="btn danger" id="reset" style="margin-top:24px">還原成原始 Excel 清單</button>`;
+  h+=`<button class="btn danger" id="reset" style="margin-top:24px">還原成共用清單</button>`;
   $app.innerHTML=h;
   $app.querySelectorAll('.mrow').forEach(el=>el.onclick=()=>itemForm(el.dataset.id));
   document.getElementById('reset').onclick=()=>{
-    if(!confirm('會清除所有自行新增、修改的物品與模式、類別（勾選紀錄保留），確定？')) return;
-    const keep={record:S.record}; S=defaultState(); S.record=keep.record; save(); toast('已還原'); manage();
+    if(!confirm('會清除這支手機自己新增、修改、刪除的物品與模式、類別（勾選紀錄保留），確定？')) return;
+    Object.assign(S,{added:[], edits:{}, deleted:[], modes:[], cats:[]}); save(); toast('已還原'); manage();
   };
 }
 
 home();
+loadServer();
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') loadServer(); });
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
